@@ -18,6 +18,8 @@ SECRET_KEY = getenv(
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8080"]
+
 ADMIN_URL = getenv("DJANGO_ADMIN_URL")
 EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
 EMAIL_HOST = getenv("EMAIL_HOST")
@@ -26,7 +28,6 @@ DEFAULT_FROM_EMAIL = getenv("DEFAULT_FROM_EMAIL")
 DOMAIN = getenv("DOMAIN")
 
 
-// logging
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

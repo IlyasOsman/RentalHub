@@ -1,0 +1,125 @@
+services:
+  api: &api
+    build:
+      context: .
+      dockerfile: ./docker/local/django/Dockerfile
+    image: rentalhub_api
+    container_name: rentalhub_api
+    volumes:
+      - .:/app:z
+      - ./staticfiles:/app/staticfiles
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.envs/.env.local
+    depends_on:
+      - postgres
+      - mailpit
+      - redis
+    command: /start
+    networks:
+      - rentalhub
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/local/postgres/Dockerfile
+    image: rentalhub_postgres
+    container_name: rentalhub_postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - rentalhub_postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.envs/.env.local
+    networks:
+      - rentalhub
+
+  mailpit:
+    image: docker.io/axllent/mailpit:v1.15
+    container_name: rentalhub_mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    volumes:  
+      - rentalhub_mailpit_data:/data
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATA_FILE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1  
+    networks:
+      - rentalhub
+
+  client:
+    build:
+      context: ./client
+      dockerfile: ./docker/local/Dockerfile
+    container_name: rental_client
+    image: rental_client
+    # ports:
+    #   - "3000:3000"
+    expose:
+      - "3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - rentalhub
+
+  redis:
+    image: redis:7.0-alpine3.19
+    command: redis-server --appendonly yes
+    container_name: rentalhub_redis
+    volumes:
+      - rentalhub_redis_data:/data
+    networks:
+      - rentalhub
+
+  celeryworker:
+    <<: *api
+    image: rentalhub_celeryworker
+    container_name: rentalhub_celeryworker
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *api
+    image: rentalhub_celerybeat
+    container_name: rentalhub_celerybeat
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *api
+    image: rentalhub_flower
+    container_name: rentalhub_flower
+    ports:
+      - "5555:5555"
+    command: /start-flower
+  
+  nginx:
+    build:
+      context: ./docker/local/nginx
+      dockerfile: Dockerfile
+    restart: always
+    container_name: rentalhub_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./staticfiles:/app/staticfiles
+      - logs_store:/var/log/nginx
+    depends_on:
+      - api
+    networks:
+      - rentalhub
+
+networks:
+  rentalhub:
+    external: true
+
+volumes:
+  rentalhub_postgres_data: {}
+  rentalhub_mailpit_data: {}
+  logs_store: {}
+  rentalhub_redis_data: {}
