@@ -25,6 +25,11 @@ urlpatterns = [
     path("api/v1/auth/", include("djoser.urls")),
     path("api/v1/auth/", include("core.users.urls")),
     path("api/v1/profiles/", include("core.profiles.urls")),
+    path("api/v1/apartments/", include("core.apartments.urls")),
+    path("api/v1/issues/", include("core.issues.urls")),
+    path("api/v1/reports/", include("core.reports.urls")),
+    path("api/v1/ratings/", include("core.ratings.urls")),
+    path("api/v1/posts/", include("core.posts.urls")),
 ]
 
 admin.site.site_header = "RentalHub Admin"

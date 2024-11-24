@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from os import getenv, path
 from dotenv import load_dotenv
+import cloudinary
+from datetime import timedelta
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -58,6 +61,8 @@ LOCAL_APPS = [
     "core.profiles",
     "core.ratings",
     "core.posts",
+    "core.apartments",
+    "core.reports",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -134,7 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "Africa/Kigali"
+TIME_ZONE = "Africa/Nairobi"
 USE_I18N = True
 USE_TZ = True
 SITE_ID = 1
@@ -195,10 +200,10 @@ COOKIE_SECURE = getenv("COOKIE_SECURE", "True") == "True"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "core_apps.common.cookie_auth.CookieAuthentication",
+        "core.common.cookie_auth.CookieAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    "DEFAULT_PAGINATION_CLASS": ("rest_framework.pagination.PageNumberPagination",),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
@@ -234,8 +239,8 @@ DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "password-reset/{uid}/{token}",
     "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS": getenv("REDIRECT_URIS", "").split(","),
     "SERIALIZERS": {
-        "user_create": "core_apps.users.serializers.CreateUserSerializer",
-        "current_user": "core_apps.users.serializers.CustomUserSerializer",
+        "user_create": "core.users.serializers.CreateUserSerializer",
+        "current_user": "core.users.serializers.CustomUserSerializer",
     },
 }
 
@@ -257,7 +262,7 @@ SOCIAL_AUTH_PIPELINE = [
     "social_core.pipeline.social_auth.associate_user",
     "social_core.pipeline.social_auth.load_extra_data",
     "social_core.pipeline.user.user_details",
-    "core_apps.profiles.pipeline.save_profile",
+    "core.profiles.pipeline.save_profile",
 ]
 
 AUTHENTICATION_BACKENDS = [
