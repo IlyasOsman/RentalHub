@@ -62,5 +62,35 @@ Ensure you have the following installed:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/real-estate-mvp.git
-   cd real-estate-mvp
+   git clone git@github.com:IlyasOsman/RentalHub.git
+   cd RentlHub
+
+### Set up environment variables:
+
+   ```sh
+      cp .env.example .env
+   ```
+### Update the .env file with your configuration.
+
+### Build and start the Docker containers:
+
+  ```sh
+      make build
+   ```
+
+### Run database migrations:
+
+   ```sh
+      make migrate
+   ```
+
+### Create a superuser for Django Admin:
+
+   ```sh
+   make superuser
+   ```
+### Access the application:
+
+#### Frontend: http://localhost:3000
+#### Backend API: http://localhost:8000/api/
+#### Admin Panel: http://localhost:8000/admin/
